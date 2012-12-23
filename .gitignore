@@ -1,0 +1,12 @@
+out/
+target/
+.idea/
+*.iml
+*.ipr
+*.iws
+*.log
+.DS_Store
+jredis-bench.log*
+*.deb
+*.ser
+.idea
