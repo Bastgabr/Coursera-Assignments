@@ -11,21 +11,10 @@ import collection.mutable.ArrayBuffer
  * To change this template use File | Settings | File Templates.
  */
 
-case class KnapsackItem(value: Int, weight: Int)
 
-object Knapsack1 {
+object Knapsack1 extends Knapsack {
   def main(args: Array[String]): Unit = {
-    val rowsFromFile: List[String] = List[String](Source.fromInputStream(getClass.getResourceAsStream("/inc/threedee/stanford/algo2/knapsack1.txt")).getLines().toList: _*)
-    val headerRowParts: Array[Int] = rowsFromFile.head.split(' ').map(_.toInt)
-    val (knapsackSize, numberOfItems): (Int, Int) = (headerRowParts(0), headerRowParts(1))
-    val items: ArrayBuffer[KnapsackItem] = new ArrayBuffer[KnapsackItem](numberOfItems + 1)
-    items += KnapsackItem(0, 0) //Dummy
-    for (row <- rowsFromFile.tail) {
-      val rowParts: Array[Int] = row.split(' ').map(_.toInt)
-      val item: KnapsackItem = KnapsackItem(rowParts(0), rowParts(1))
-      items += item
-    }
-    println(solveKnapsack(items, knapsackSize, numberOfItems))
+    println(solveKnapsack("/inc/threedee/stanford/algo2/knapsack1.txt"))
   }
 
   def solveKnapsack(items: ArrayBuffer[KnapsackItem], knapsackSize: Int, numberOfItems: Int): Int = {
