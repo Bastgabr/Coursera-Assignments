@@ -1,6 +1,5 @@
 package inc.threedee.stanford.algo2
 
-import io.Source
 import collection.mutable.ArrayBuffer
 
 /**
