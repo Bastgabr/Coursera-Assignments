@@ -25,7 +25,7 @@ object Knapsack2 extends Knapsack {
           solution(a)(b) = math.max(getValue(a - 1, b), getValue(a - 1, b - items(a).weight) + items(a).value)
         }
         else {
-          solution(a)(b) = solution(a - 1)(b)
+          solution(a)(b) = getValue(a - 1, b)
         }
       }
       if (solution(a)(b) == -1) {
