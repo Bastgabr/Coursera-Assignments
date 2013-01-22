@@ -49,7 +49,6 @@ object TravelingSalesman {
       setToStoredCostIndexedByDestinationIndex += BitSet(i) -> storedCost
     }
     for (m <- 2 to numCities) {
-      println("m = " + m)
       val subsetsOfSizeMContaining1: Iterator[BitSet] =
         (1 to numCities).combinations(m).filter(set => set.contains(1)).map(elemsInSet => {
           BitSet(elemsInSet.toArray: _*)
