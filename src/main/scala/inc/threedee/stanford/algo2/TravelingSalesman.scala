@@ -21,7 +21,7 @@ object Coordinate {
   def getDistance(c1: Coordinate, c2: Coordinate): Double = {
     distanceCache.get((c1, c2)) match {
       case None => {
-        val distance: Double = math.sqrt((c1.x - c2.x) * (c1.x - c2.x) - (c1.y - c2.y) * (c1.y - c2.y))
+        val distance: Double = math.sqrt((c1.x - c2.x) * (c1.x - c2.x) + (c1.y - c2.y) * (c1.y - c2.y))
         distanceCache += (c1, c2) -> distance
         distance
       }
@@ -56,11 +56,12 @@ object TravelingSalesman {
         })
       for (set <- subsetsOfSizeMContaining1) {
         val updatedCostsForSetIndexedByDestinationIndex: Array[Double] = new Array[Double](numCities)
-        for (j <- set.filter(_ != 1)) {
+        updatedCostsForSetIndexedByDestinationIndex(0) = INFINITY
+        for (j <- set.filterNot(_ == 1)) {
           var min: Double = INFINITY
           val setMinusJ: BitSet = set - j
           val storedCostsForSetMinusJ: Array[Double] = setToStoredCostIndexedByDestinationIndex.get(setMinusJ).get
-          for (k <- set.filter(_ != j)) {
+          for (k <- set.filterNot(_ == j)) {
             val currCost: Double = storedCostsForSetMinusJ(k - 1) match {
               case INFINITY => INFINITY
               case _ => storedCostsForSetMinusJ(k - 1) +
