@@ -29,15 +29,17 @@ object TwoSat {
   //Papadimitriou’s 2-SAT Algorithm
   def isSatisfiable(clauses: Array[Clause]): Boolean = {
     val numVariables: Int = clauses.size
-    val numRepeatTimes: Int = (math.log(numVariables) / math.log(2)).toInt
+    val twoNSquare: BigInt = BigInt(2) * BigInt(numVariables) * BigInt(numVariables)
+    val logTwoN: Int = (math.log(numVariables) / math.log(2)).toInt
     //Repeat log(n, 2) times
-    for (i <- 1 to numRepeatTimes) {
+    for (i <- 1 to logTwoN) {
       //Choose random initial assignment
       val currentAssignment: Array[Boolean] = Array.fill(numVariables) {
         Random.nextBoolean()
       }
       //Repeat 2*n^2 times
-      for (j <- 1 to (2 * numVariables * numVariables)) {
+      var j: BigInt = 0
+      while (j < twoNSquare) {
         currentAssignmentSatisfiesAllClauses(currentAssignment, clauses) match {
           case true => {
             //If current assignment satisfies all clauses, halt and report this
@@ -62,6 +64,7 @@ object TwoSat {
             currentAssignment(indexOfVarToBeFlipped) = !currentAssignment(indexOfVarToBeFlipped)
           }
         }
+        j = j + 1
       }
     }
     false
@@ -90,7 +93,7 @@ object TwoSat {
     for (i <- 1 to 6) {
       val inputFile: String = "/inc/threedee/stanford/algo2/2sat%d.txt".format(i)
       val inputClauses: Array[Clause] = parseInput(inputFile)
-      print(isSatisfiable(inputClauses) match {
+      println(isSatisfiable(inputClauses) match {
         case true => 1
         case false => 0
       })
