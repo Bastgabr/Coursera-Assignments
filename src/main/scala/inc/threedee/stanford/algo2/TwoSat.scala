@@ -46,22 +46,17 @@ object TwoSat {
             return true
           }
           case false => {
-            //Else, pick arbitrary unsatisfied clause and flip the value of one of its variables
-            var unsatisfiedClause: Clause = null
-            while (unsatisfiedClause == null) {
-              val randomClause: Clause = clauses(Random.nextInt(numVariables))
-              if (!randomClause.isClauseSatisfied(currentAssignment)) {
-                unsatisfiedClause = randomClause
+            //Else, for each unsatisfied clause flip the value of one of its variables
+            for (unsatisfiedClause <- clauses.filterNot(c => c.isClauseSatisfied(currentAssignment))) {
+              //Choose between the two variables uniformly at random
+              val chooseVar1: Boolean = Random.nextBoolean
+              val varToBeFlipped: Int = chooseVar1 match {
+                case true => unsatisfiedClause.var1
+                case false => unsatisfiedClause.var2
               }
+              val indexOfVarToBeFlipped: Int = math.abs(varToBeFlipped) - 1
+              currentAssignment(indexOfVarToBeFlipped) = !currentAssignment(indexOfVarToBeFlipped)
             }
-            //Choose between the two variables uniformly at random
-            val chooseVar1: Boolean = Random.nextBoolean
-            val varToBeFlipped: Int = chooseVar1 match {
-              case true => unsatisfiedClause.var1
-              case false => unsatisfiedClause.var2
-            }
-            val indexOfVarToBeFlipped: Int = math.abs(varToBeFlipped) - 1
-            currentAssignment(indexOfVarToBeFlipped) = !currentAssignment(indexOfVarToBeFlipped)
           }
         }
         j = j + 1
