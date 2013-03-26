@@ -10,3 +10,11 @@ jredis-bench.log*
 *.deb
 *.ser
 .idea
+.cache
+.classpath
+.project
+.settings/
+lib_managed/
+project/
+build.sbt
+package.scala
