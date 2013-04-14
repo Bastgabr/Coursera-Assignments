@@ -146,7 +146,11 @@ class NonEmpty(elem: Tweet, left: TweetSet, right: TweetSet) extends TweetSet {
     })))
   }
 
-  def union(that: TweetSet): TweetSet = ((left.union(right)).union(that)).incl(elem)
+  def union(that: TweetSet): TweetSet = {
+    var unioned: TweetSet = this
+    that.foreach(tweet => { unioned = unioned.incl(tweet) })
+    unioned
+  }
 
   def mostRetweeted: Tweet = {
     val maxRetweetsRight: Tweet = right match {
