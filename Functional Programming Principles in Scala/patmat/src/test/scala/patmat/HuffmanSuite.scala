@@ -52,9 +52,9 @@ class HuffmanSuite extends FunSuite {
       assert(decode(t1, List[Bit](1)) == List('b'))
     }
   }
-  
+
   test("decoded secret") {
-    println(decodedSecret)
+    assert(decodedSecret == "huffmanestcool".toList)
   }
 
   test("decode and encode a very short text should be identity") {
