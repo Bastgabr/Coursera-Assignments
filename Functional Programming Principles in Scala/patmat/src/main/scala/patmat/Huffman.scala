@@ -244,7 +244,21 @@ object Huffman {
    * sub-trees, think of how to build the code table for the entire tree.
    */
   def convert(tree: CodeTree): CodeTable = {
+    def convertInner(currentTree: CodeTree, codeTableSoFar: CodeTable): CodeTable = {
+      currentTree match {
+        case Leaf(char, weight) => codeTableSoFar
+        case Fork(left, right, ch, wt) => {
+          mergeCodeTables(convertInner(left, codeTableSoFar.map(entry => {
+            if (chars(left).contains(entry._1)) (entry._1, 0 :: entry._2) else entry
+          })), convertInner(right, codeTableSoFar.map(entry => {
+            if (chars(right).contains(entry._1)) (entry._1, 1 :: entry._2) else entry
+          })))
+        }
 
+      }
+    }
+
+    convertInner(tree, chars(tree).map(c => (c, List[Bit]())))
   }
 
   /**
@@ -253,7 +267,7 @@ object Huffman {
    * on the two parameter code tables.
    */
   def mergeCodeTables(a: CodeTable, b: CodeTable): CodeTable = {
-    
+    a ::: b
   }
 
   /**
