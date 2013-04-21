@@ -248,11 +248,8 @@ object Huffman {
       currentTree match {
         case Leaf(char, weight) => codeTableSoFar
         case Fork(left, right, ch, wt) => {
-          mergeCodeTables(convertInner(left, codeTableSoFar.map(entry => {
-            if (chars(left).contains(entry._1)) (entry._1, 0 :: entry._2) else entry
-          })), convertInner(right, codeTableSoFar.map(entry => {
-            if (chars(right).contains(entry._1)) (entry._1, 1 :: entry._2) else entry
-          })))
+          mergeCodeTables(convertInner(left, chars(left).map(c => (c, 0 :: codeTableSoFar.filter(_._1 == c).head._2))),
+            convertInner(right, chars(right).map(c => (c, 1 :: codeTableSoFar.filter(_._1 == c).head._2))))
         }
 
       }
