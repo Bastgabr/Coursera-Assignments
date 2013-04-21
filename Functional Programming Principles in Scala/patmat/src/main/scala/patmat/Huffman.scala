@@ -143,12 +143,9 @@ object Huffman {
    */
   def until(isSingleton: List[CodeTree] => Boolean,
     combineTrees: List[CodeTree] => List[CodeTree])(trees: List[CodeTree]): CodeTree = {
-    trees.size == 0 match {
-      case true => null
-      case false => isSingleton(trees) match {
-        case true => trees(0)
-        case false => until(isSingleton, combineTrees)(combineTrees(trees))
-      }
+    isSingleton(trees) match {
+      case true => trees(0)
+      case false => until(isSingleton, combineTrees)(combineTrees(trees))
     }
   }
 
