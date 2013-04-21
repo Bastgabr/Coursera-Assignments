@@ -245,14 +245,14 @@ object Huffman {
       currentTree match {
         case Leaf(char, weight) => codeTableSoFar
         case Fork(left, right, ch, wt) => {
-          mergeCodeTables(convertInner(left, chars(left).map(c => (c, 0 :: codeTableSoFar.filter(_._1 == c).head._2))),
-            convertInner(right, chars(right).map(c => (c, 1 :: codeTableSoFar.filter(_._1 == c).head._2))))
+          mergeCodeTables(convertInner(left, chars(left).map(c => (c, 0 :: codeTableSoFar.find(_._1 == c).get._2))),
+            convertInner(right, chars(right).map(c => (c, 1 :: codeTableSoFar.find(_._1 == c).get._2))))
         }
 
       }
     }
 
-    convertInner(tree, chars(tree).map(c => (c, List[Bit]())))
+    convertInner(tree, chars(tree).map(c => (c, List[Bit]()))).map(entry => (entry._1, entry._2.reverse))
   }
 
   /**
