@@ -43,6 +43,10 @@ class HuffmanSuite extends FunSuite {
     assert(combine(leaflist) === List(Fork(Leaf('e', 1), Leaf('t', 2), List('e', 't'), 3), Leaf('x', 4)))
   }
 
+  test("createCodeTree") {
+    assert(createCodeTree("aaaaaaaabbbcdefgh".toList) == Fork(Leaf('a', 8), Fork(Fork(Fork(Leaf('h', 1), Leaf('d', 1), List('h', 'd'), 2), Fork(Leaf('g', 1), Leaf('c', 1), List('g', 'c'), 2), List('h', 'd', 'g', 'c'), 4), Fork(Fork(Leaf('e', 1), Leaf('f', 1), List('e', 'f'), 2), Leaf('b', 3), List('e', 'f', 'b'), 5), List('h', 'd', 'g', 'c', 'e', 'f', 'b'), 9), List('a', 'h', 'd', 'g', 'c', 'e', 'f', 'b'), 17))
+  }
+
   test("decode") {
     new TestTrees {
       assert(decode(t2, List[Bit](0, 0)) == List('a'))

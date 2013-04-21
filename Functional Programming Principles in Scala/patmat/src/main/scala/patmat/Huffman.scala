@@ -112,13 +112,8 @@ object Huffman {
     trees match {
       case first :: second :: remaining => {
         val combined: CodeTree = makeCodeTree(first, second)
-        remaining match {
-          case Nil => List[CodeTree](combined)
-          case _ =>
-            val combinedWeight: Int = weight(combined)
-            remaining.filter(weight(_) < combinedWeight) ::: combined :: remaining.filter(weight(_) > combinedWeight)
-        }
-
+        val combinedWeight: Int = weight(combined)
+        remaining.filter(weight(_) < combinedWeight) ::: combined :: remaining.filter(weight(_) >= combinedWeight)
       }
       case _ => trees
     }
