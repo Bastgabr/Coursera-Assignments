@@ -114,6 +114,7 @@ class AnagramsSuite extends FunSuite {
       List("Zulu", "nil", "Rex"),
       List("rulez", "Linux"),
       List("Linux", "rulez"))
+    println(sentenceAnagrams(sentence).mkString("\n"))
     assert(sentenceAnagrams(sentence).toSet === anas.toSet)
   }
 
