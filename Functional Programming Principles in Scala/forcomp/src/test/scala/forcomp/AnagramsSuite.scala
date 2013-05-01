@@ -57,8 +57,33 @@ class AnagramsSuite extends FunSuite {
       List(('b', 2)),
       List(('a', 1), ('b', 2)),
       List(('a', 2), ('b', 2)))
-      println(combinations(abba).mkString("\n"))
     assert(combinations(abba).toSet === abbacomb.toSet)
+  }
+
+  test("combinations: abb") {
+    val abb = List(('a', 1), ('b', 2))
+    val abbcomb = List(
+      List(),
+      List(('a', 1)),
+      List(('b', 1)),
+      List(('a', 1), ('b', 1)),
+      List(('b', 2)),
+      List(('a', 1), ('b', 2)))
+    assert(combinations(abb).toSet === abbcomb.toSet)
+  }
+
+  test("combinations: abc") {
+    val abc = List(('a', 1), ('b', 1), ('c', 1))
+    val abccomb = List(
+      List(),
+      List(('a', 1)),
+      List(('b', 1)),
+      List(('c', 1)),
+      List(('a', 1), ('b', 1)),
+      List(('b', 1), ('c', 1)),
+      List(('a', 1), ('c', 1)),
+      List(('a', 1), ('b', 1), ('c', 1)))
+    assert(combinations(abc).toSet === abccomb.toSet)
   }
 
   test("sentence anagrams: []") {
