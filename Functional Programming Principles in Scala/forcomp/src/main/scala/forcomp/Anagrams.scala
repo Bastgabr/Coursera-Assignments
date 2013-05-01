@@ -98,7 +98,12 @@ object Anagrams {
    *  Note: the resulting value is an occurrence - meaning it is sorted
    *  and has no zero-entries.
    */
-  def subtract(x: Occurrences, y: Occurrences): Occurrences = ???
+  def subtract(x: Occurrences, y: Occurrences): Occurrences = y.foldLeft(x.toMap)(subtract).toList.filter(_._2 > 0)
+
+  def subtract(x: Map[Char, Int], term: (Char, Int)): Map[Char, Int] = {
+    val (char, freq) = term
+    x + (char -> (x.get(char).get - freq))
+  }
 
   /**
    * Returns a list of all anagram sentences of the given sentence.
