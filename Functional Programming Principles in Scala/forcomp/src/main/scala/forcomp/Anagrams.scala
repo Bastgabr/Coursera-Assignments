@@ -90,14 +90,15 @@ object Anagrams {
       case Nil => List(List())
       case (char, freq) :: tail => {
         val tailCombinations: List[Occurrences] = combinations(tail)
-        if (freq == 0) {
-          tailCombinations
-        } else {
-          for {
-            split <- 0 to freq
-            tailCombination <- tailCombinations
-          } yield (char, split) :: tailCombination
-        }.toList.map(list => list.filter(_._2 > 0))
+        freq match {
+          case 0 => tailCombinations
+          case _ => {
+            for {
+              split <- 0 to freq
+              tailCombination <- tailCombinations
+            } yield (char, split) :: tailCombination
+          }.toList.map(list => list.filter(_._2 > 0))
+        }
       }
     }
   }
