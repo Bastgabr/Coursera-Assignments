@@ -12,12 +12,12 @@ trait GameDef {
 
   /**
    * The case class `Pos` encodes positions in the terrain.
-   * 
+   *
    * IMPORTANT NOTE
    *  - The `x` coordinate denotes the position on the vertical axis
    *  - The `y` coordinate is used for the horizontal axis
    *  - The coordinates increase when moving down and right
-   * 
+   *
    * Illustration:
    *
    *     0 1 2 3   <- y axis
@@ -25,10 +25,10 @@ trait GameDef {
    *   1 o o o o
    *   2 o # o o    # is at position Pos(2, 1)
    *   3 o o o o
-   *  
+   *
    *   ^
    *   |
-   *  
+   *
    *   x axis
    */
   case class Pos(x: Int, y: Int) {
@@ -63,28 +63,26 @@ trait GameDef {
    */
   type Terrain = Pos => Boolean
 
-  
   /**
    * The terrain of this game. This value is left abstract.
    */
   val terrain: Terrain
-
 
   /**
    * In Bloxorz, we can move left, right, Up or down.
    * These moves are encoded as case objects.
    */
   sealed abstract class Move
-  case object Left  extends Move
+  case object Left extends Move
   case object Right extends Move
-  case object Up    extends Move
-  case object Down  extends Move
+  case object Up extends Move
+  case object Down extends Move
 
   /**
    * This function returns the block at the start position of
    * the game.
    */
-  def startBlock: Block = ???
+  def startBlock: Block = Block(startPos, startPos)
 
   /**
    * A block is represented by the position of the two cubes that
@@ -108,27 +106,25 @@ trait GameDef {
      */
     def dy(d1: Int, d2: Int) = Block(b1.dy(d1), b2.dy(d2))
 
-
     /** The block obtained by moving left */
-    def left = if (isStanding)         dy(-2, -1)
-               else if (b1.x == b2.x)  dy(-1, -2)
-               else                    dy(-1, -1)
+    def left = if (isStanding) dy(-2, -1)
+    else if (b1.x == b2.x) dy(-1, -2)
+    else dy(-1, -1)
 
     /** The block obtained by moving right */
-    def right = if (isStanding)        dy(1, 2)
-                else if (b1.x == b2.x) dy(2, 1)
-                else                   dy(1, 1)
+    def right = if (isStanding) dy(1, 2)
+    else if (b1.x == b2.x) dy(2, 1)
+    else dy(1, 1)
 
     /** The block obtained by moving up */
-    def up = if (isStanding)           dx(-2, -1)
-             else if (b1.x == b2.x)    dx(-1, -1)
-             else                      dx(-1, -2)
+    def up = if (isStanding) dx(-2, -1)
+    else if (b1.x == b2.x) dx(-1, -1)
+    else dx(-1, -2)
 
     /** The block obtained by moving down */
-    def down = if (isStanding)         dx(1, 2)
-               else if (b1.x == b2.x)  dx(1, 1)
-               else                    dx(2, 1)
-
+    def down = if (isStanding) dx(1, 2)
+    else if (b1.x == b2.x) dx(1, 1)
+    else dx(2, 1)
 
     /**
      * Returns the list of blocks that can be obtained by moving
@@ -145,12 +141,12 @@ trait GameDef {
     /**
      * Returns `true` if the block is standing.
      */
-    def isStanding: Boolean = ???
+    def isStanding: Boolean = b1.x == b2.x && b1.y == b2.y
 
     /**
      * Returns `true` if the block is entirely inside the terrain.
      */
-    def isLegal: Boolean = ???
+    def isLegal: Boolean = terrain(b1) && terrain(b2)
 
   }
 }
