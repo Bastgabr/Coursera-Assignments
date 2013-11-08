@@ -37,7 +37,7 @@ abstract class QuickCheckHeap extends Properties("Heap") with IntHeap {
     forAll { (a: Int) =>
       val h1 = insert(a, empty)
       val h2 = deleteMin(h1)
-      isEmpty(h2) == true
+      isEmpty(h2)
     }
 
   property("hint3: Given any heap, you should get a sorted sequence of elements when continually finding and deleting minima.") =
@@ -99,12 +99,15 @@ abstract class QuickCheckHeap extends Properties("Heap") with IntHeap {
           }
         }
       }
-      val toInsert = 1 to n
-      var h = empty
-      for (num <- toInsert) {
-        h = insert(num, h)
+
+      def insertList(h: H, list: List[Int]): H = {
+        list match {
+          case Nil => h
+          case t :: ts => insertList(insert(t, h), ts)
+        }
       }
-      val elems = getElems(h)
-      elems == toInsert
+      val toInsert = (1 to n).toList
+      val retrievedElems = getElems(insertList(empty, toInsert))
+      retrievedElems == toInsert
     }
 }
