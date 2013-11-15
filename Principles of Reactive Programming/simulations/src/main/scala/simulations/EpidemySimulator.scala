@@ -93,6 +93,6 @@ class EpidemySimulator extends Simulator {
 
   persons.foreach(person => {
     afterDelay(0)(person.move)
-    afterDelay(randomBelow(moveMaxDelayDays))(person.move)
+    afterDelay(randomBelow(moveMaxDelayDays - 1) + 1)(person.move)
   })
 }
