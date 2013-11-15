@@ -71,15 +71,45 @@ abstract class CircuitSimulator extends Simulator {
 
   def orGate2(a1: Wire, a2: Wire, output: Wire) {
     val notA1, notA2, notOutput = new Wire
-    inverter(a1, notA1); inverter(a2, notA2)
+    inverter(a1, notA1)
+    inverter(a2, notA2)
     andGate(notA1, notA2, notOutput)
     inverter(notOutput, output)
   }
 
-  def demux(in: Wire, c: List[Wire], out: List[Wire]) {
-    ???
+  def identityGate(a1: Wire, output: Wire) {
+    def noOpAction() {
+      val a1Sig = a1.getSignal
+      afterDelay(0) { output.setSignal(a1Sig) }
+    }
+    a1 addAction noOpAction
   }
 
+  def demux(in: Wire, c: List[Wire], out: List[Wire]) {
+    def demuxInternal(inputs: List[Wire], controls: List[Wire]): List[Wire] = {
+      controls match {
+        case headControl :: restControl => {
+          val headControlNot = new Wire
+          inverter(headControl, headControlNot)
+          val outputs = inputs.map(input => {
+            val o1 = new Wire
+            val o2 = new Wire
+            andGate(input, headControl, o1)
+            andGate(input, headControlNot, o2)
+            List(o1, o2)
+          }).flatten
+          demuxInternal(outputs, restControl)
+        }
+        case Nil => {
+          inputs
+        }
+      }
+    }
+    val outputs = demuxInternal(List(in), c)
+    for (i <- 0 until outputs.length) {
+      identityGate(outputs(i), out(i))
+    }
+  }
 }
 
 object Circuit extends CircuitSimulator {
