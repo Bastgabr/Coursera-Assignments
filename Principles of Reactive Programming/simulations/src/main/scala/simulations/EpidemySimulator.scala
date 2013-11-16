@@ -71,23 +71,31 @@ class EpidemySimulator extends Simulator {
       if (!infected && !sick && !immune && !dead && personsAtNextPosition.find(_.infected) != None) {
         this.infected = randomBelow(100) < (transRate * 100)
       }
-      if (infected && !sick && !immune && !dead) {
-        afterDelay(incubationTime)(this.sick = true)
-      }
-      if (infected && !immune && !dead && randomBelow(100) < (dieRate * 100)) {
-        afterDelay(dieTime)(this.dead = true)
-      }
-      if (infected && !sick && !immune && !dead) {
-        afterDelay(immuneTime)({
+
+      afterDelay(incubationTime)({
+        if (infected && !sick && !immune && !dead) {
+          this.sick = true
+        }
+      })
+
+      afterDelay(dieTime)({
+        if (infected && !immune && !dead && randomBelow(100) < (dieRate * 100)) {
+          this.dead = true
+        }
+      })
+
+      afterDelay(immuneTime)({
+        if (infected && !dead) {
           this.immune = true
-        })
-      }
-      if (infected && !dead) {
-        afterDelay(healTime)({
+        }
+      })
+
+      afterDelay(healTime)({
+        if (infected && !dead) {
           this.infected = false
           this.sick = false
-        })
-      }
+        }
+      })
     }
   }
 
