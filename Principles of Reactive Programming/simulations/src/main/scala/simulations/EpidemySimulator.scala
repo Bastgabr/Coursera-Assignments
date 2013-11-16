@@ -87,6 +87,7 @@ class EpidemySimulator extends Simulator {
       afterDelay(immuneTime)({
         if (infected && !dead) {
           this.immune = true
+          this.sick = false
         }
       })
 
@@ -94,6 +95,7 @@ class EpidemySimulator extends Simulator {
         if (infected && !dead) {
           this.infected = false
           this.sick = false
+          this.immune = false
         }
       })
     }
