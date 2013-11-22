@@ -5,8 +5,7 @@ import scala.concurrent._
 import scala.concurrent.duration._
 import ExecutionContext.Implicits.global
 import scala.async.Async.{ async, await }
-
-
+import scala.language.postfixOps
 
 /**
  * Contains basic data types, data structures and `Future` extensions.
@@ -28,7 +27,10 @@ package object nodescala {
      *
      *  This future may be useful when testing if timeout logic works correctly.
      */
-    def never[T]: Future[T] = ???
+    def never[T]: Future[T] = {
+      val p = Promise[T]()
+      p.future
+    }
 
     /**
      * Given a list of futures `fs`, returns the future holding the list of values of all the futures from `fs`.
