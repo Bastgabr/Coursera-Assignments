@@ -17,4 +17,3 @@ jredis-bench.log*
 lib_managed/
 project/
 build.sbt
-package.scala
