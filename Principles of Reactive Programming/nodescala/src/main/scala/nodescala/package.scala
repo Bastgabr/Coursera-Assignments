@@ -115,7 +115,15 @@ package object nodescala {
      *  The function `cont` is called only after the current future completes.
      *  The resulting future contains a value returned by `cont`.
      */
-    def continueWith[S](cont: Future[T] => S): Future[S] = ???
+    def continueWith[S](cont: Future[T] => S): Future[S] = {
+      val p = Promise[S]()
+      f.onComplete({
+        case _ => p.completeWith(Future {
+          cont(f)
+        })
+      })
+      p.future
+    }
 
     /**
      * Continues the computation of this future by taking the result
@@ -124,10 +132,17 @@ package object nodescala {
      *  The function `cont` is called only after the current future completes.
      *  The resulting future contains a value returned by `cont`.
      */
-    def continue[S](cont: Try[T] => S): Future[S] = ???
+    def continue[S](cont: Try[T] => S): Future[S] = {
+      val p = Promise[S]()
+      f.onComplete({
+        case value => p.completeWith(Future {
+          cont(value)
+        })
+      })
+      p.future
+    }
 
   }
-
   /**
    * Subscription objects are used to be able to unsubscribe
    *  from some event source.

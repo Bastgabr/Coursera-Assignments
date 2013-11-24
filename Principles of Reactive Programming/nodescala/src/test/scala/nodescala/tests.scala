@@ -147,6 +147,21 @@ class NodeScalaSuite extends FunSuite {
     }
   }
 
+  test("Continue should handle exception") {
+    val f = future(throw new IllegalStateException())
+    val s = f.continue(_ => "Hello")
+    assert("Hello" === Await.result(s, 100 nanosecond))
+  }
+
+  test("A Future should be continued") {
+    val result = Future[String] {
+      throw new IllegalStateException()
+    }.continueWith { f =>
+      "continued"
+    }
+    assert(Await.result(result, 1 second) == "continued")
+  }
+
   test("CancellationTokenSource should allow stopping the computation") {
     val cts = CancellationTokenSource()
     val ct = cts.cancellationToken
