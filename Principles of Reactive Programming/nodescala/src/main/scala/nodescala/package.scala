@@ -6,6 +6,7 @@ import scala.concurrent.duration._
 import ExecutionContext.Implicits.global
 import scala.async.Async.{ async, await }
 import scala.language.postfixOps
+import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * Contains basic data types, data structures and `Future` extensions.
@@ -191,7 +192,22 @@ package object nodescala {
     /**
      * Creates a new `CancellationTokenSource`.
      */
-    def apply(): CancellationTokenSource = ???
+    def apply(): CancellationTokenSource = new CancellationTokenSource {
+
+      val p = Promise[Boolean]()
+      val cancelled: AtomicBoolean = new AtomicBoolean
+
+      def unsubscribe() = {
+        p.success(true)
+        p.future onComplete {
+          case _ => cancelled.set(true)
+        }
+      }
+
+      def cancellationToken = new CancellationToken {
+        def isCancelled = cancelled.get()
+      }
+    }
   }
 
 }
