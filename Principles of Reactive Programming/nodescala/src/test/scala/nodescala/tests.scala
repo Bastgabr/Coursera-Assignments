@@ -1,14 +1,12 @@
 package nodescala
 
-
-
 import scala.language.postfixOps
-import scala.util.{Try, Success, Failure}
+import scala.util.{ Try, Success, Failure }
 import scala.collection._
 import scala.concurrent._
 import ExecutionContext.Implicits.global
 import scala.concurrent.duration._
-import scala.async.Async.{async, await}
+import scala.async.Async.{ async, await }
 import org.scalatest._
 import NodeScala._
 import org.junit.runner.RunWith
@@ -31,6 +29,105 @@ class NodeScalaSuite extends FunSuite {
       assert(false)
     } catch {
       case t: TimeoutException => // ok!
+    }
+  }
+
+  test("All Futures should be true") {
+    val f1 = Future.always(1)
+    val f2 = Future.always(2)
+    val f3 = Future.always(3)
+    val fs = List(f1, f2, f3)
+    val all = Future.all(fs)
+    val expected = List(1, 2, 3)
+    assert(Await.result(all, 1 second) === expected)
+  }
+
+  test("Trying to take value of Future.never should throw TimeoutException") {
+    intercept[TimeoutException] {
+      val fs = List(Future.always { 1 }, Future.always { 2 }, Future.never)
+      val fa = Future.all(fs)
+      Await.result(fa, 1 second)
+    }
+  }
+
+  test("Any should return the first completed future") {
+    val durs = List.fill(5)(math.random).zipWithIndex
+    // E.g., List[(Double, Int)] = List((0.29697330541798195,0), (0.6334949214823781,1), (0.13345745202036496,2), (0.6935523459156602,3), (0.012216707302845187,4))
+
+    val minIndex = durs.minBy { _._1 }._2
+    // E.g., 4
+
+    val fxs = durs.map {
+      case (dur, idx) => Future {
+        blocking {
+          Thread.sleep((dur * 1000L).toLong)
+        }
+        idx
+      }
+    }
+
+    val any = Future.any(fxs)
+
+    assert(Await.result(any, 1 second) == minIndex)
+  }
+
+  test("Any should return the first completed future, or error") {
+    val any = Future.any(List(Future.never[Int], Future.always(1)))
+    try {
+      assert(Await.result(any, 5 seconds) == 1)
+    } catch {
+      case t: Throwable => fail
+    }
+
+    val any2 = Future.any(List(
+      Future {
+        blocking {
+          Thread.sleep(500)
+        }; 1
+      },
+      Future {
+        blocking {
+          Thread.sleep(200)
+        }; 2
+      }))
+
+    try {
+      assert(Await.result(any2, 5 seconds) == 2)
+    } catch {
+      case t: Throwable => fail
+    }
+
+    val any3 = Future.any(List(
+      Future {
+        blocking {
+          Thread.sleep(500)
+        }; 1
+      },
+      Future {
+        blocking {
+          Thread.sleep(200)
+        }; 2
+      },
+      Future {
+        throw new Exception
+      }))
+
+    try {
+      Await.result(any3, 5 seconds)
+      fail
+    } catch {
+      case t: Throwable => //ok
+    }
+  }
+
+  test("A Future should not complete before given delay") {
+    val f1 = Future.delay(3 seconds)
+
+    try {
+      Await.result(f1, 1 seconds)
+      fail
+    } catch {
+      case t: Throwable => //ok
     }
   }
 
