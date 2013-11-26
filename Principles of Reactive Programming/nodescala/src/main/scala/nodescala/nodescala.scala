@@ -60,7 +60,7 @@ trait NodeScala {
         respond(exchange, cancellationToken, handler(request))
       }
     }
-    cancellationTokenSource
+    Subscription(subscription, cancellationTokenSource)
   }
 }
 
