@@ -215,6 +215,31 @@ class NodeScalaSuite extends FunSuite {
     assert(Await.result(p.future, 2 second))
   }
 
+  test("Server should cancel a long-running or infinite response") {
+    def nextStream(lo: Int): Stream[String] = {
+      Stream.cons(lo + "", nextStream(lo + 1))
+    }
+    val dummy = new DummyServer(8191)
+    val dummySubscription = dummy.start("/testDir") {
+      request => Stream.cons(0 + "", nextStream(0)).iterator
+    }
+
+    // wait until server is really installed
+    Thread.sleep(500)
+
+    def test(req: Request) {
+      val webpage = dummy.emit("/testDir", req)
+      val content = Await.result(webpage.loaded.future, 5 seconds)
+    }
+
+    val future = Future.delay(2 seconds)
+    future.onComplete(t => {
+      dummySubscription.unsubscribe
+    })
+
+    test(immutable.Map("infinite" -> List("Does it work?")))
+  }
+
   class DummyExchange(val request: Request) extends Exchange {
     @volatile var response = ""
     val loaded = Promise[String]()
