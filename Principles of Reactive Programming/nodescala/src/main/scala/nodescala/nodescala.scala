@@ -51,17 +51,17 @@ trait NodeScala {
    */
   def start(relativePath: String)(handler: Request => Response): Subscription = {
     val listener = createListener(relativePath)
-    val cancellationToken = CancellationTokenSource().cancellationToken
     val subscription = listener.start
+    val cancellationTokenSource = CancellationTokenSource()
+    val cancellationToken = cancellationTokenSource.cancellationToken
     async {
       while (cancellationToken.nonCancelled) {
         val (request, exchange) = await(listener.nextRequest)
         respond(exchange, cancellationToken, handler(request))
       }
     }
-    subscription
+    cancellationTokenSource
   }
-
 }
 
 object NodeScala {

@@ -150,7 +150,7 @@ class NodeScalaSuite extends FunSuite {
   test("Continue should handle exception") {
     val f = future(throw new IllegalStateException())
     val s = f.continue(_ => "Hello")
-    assert("Hello" === Await.result(s, 100 nanosecond))
+    assert("Hello" === Await.result(s, 1 second))
   }
 
   test("A Future should be continued") {
@@ -188,7 +188,9 @@ class NodeScalaSuite extends FunSuite {
         async {
           while (ct.nonCancelled) {
             println("working")
-            Thread.sleep(200)
+            blocking {
+              Thread.sleep(200)
+            }
           }
           println("done")
           p.success(true)

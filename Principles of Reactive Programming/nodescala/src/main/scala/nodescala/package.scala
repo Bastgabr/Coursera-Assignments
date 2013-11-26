@@ -59,7 +59,7 @@ package object nodescala {
      */
     def any[T](fs: List[Future[T]]): Future[T] = {
       val p = Promise[T]()
-      fs.foreach(f => p.completeWith(f))
+      fs.foreach(f => p.tryCompleteWith(f))
       p.future
     }
 
@@ -67,9 +67,7 @@ package object nodescala {
      * Returns a future with a unit value that is completed after time `t`.
      */
     def delay(t: Duration): Future[Unit] = Future {
-      blocking {
-        Thread.sleep(t.length)
-      }
+      Thread.sleep(t.length)
     }
 
     /**
@@ -105,7 +103,7 @@ package object nodescala {
      */
     def now: T = {
       try {
-        Await.result(f, 0 second)
+        Await.result(f, 0 nanosecond)
       } catch {
         case e: Throwable => throw new NoSuchElementException
       }
