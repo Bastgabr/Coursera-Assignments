@@ -124,11 +124,22 @@ class NodeScalaSuite extends FunSuite {
     val f1 = Future.delay(3 seconds)
 
     try {
-      Await.result(f1, 1 seconds)
+      Await.result(f1, 1 second)
       fail
     } catch {
-      case t: Throwable => //ok
+      case t: TimeoutException => //ok
     }
+  }
+
+  test("Test delay") {
+
+    @volatile var test = 0;
+    val fd = Future.delay(1 seconds)
+    fd onComplete { case _ => test = 42 }
+
+    Await.ready(fd, 3 seconds)
+    Thread.sleep(10) // allow time for callback to be called
+    assert(test === 42)
   }
 
   test("Test now") {
