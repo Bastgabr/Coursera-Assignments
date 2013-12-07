@@ -57,6 +57,7 @@ trait SwingApi {
     def textValues: Observable[String] = Observable(observer => {
       val reaction = PartialFunction[Event, Unit] {
         case ValueChanged(tf) => observer.onNext(tf.text)
+        case _ =>
       }
       field.subscribe(reaction)
       Subscription {
@@ -77,6 +78,7 @@ trait SwingApi {
     def clicks: Observable[Button] = Observable(observer => {
       val reaction = PartialFunction[Event, Unit] {
         case ButtonClicked(b) => observer.onNext(b)
+        case _ =>
       }
       button.subscribe(reaction)
       Subscription {
