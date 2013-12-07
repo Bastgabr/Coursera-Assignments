@@ -1,19 +1,16 @@
 package suggestions
 
-
-
 import language.postfixOps
 import scala.concurrent._
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.util.{Try, Success, Failure}
+import scala.util.{ Try, Success, Failure }
 import rx.lang.scala._
 import org.scalatest._
 import gui._
 
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-
 
 @RunWith(classOf[JUnitRunner])
 class WikipediaApiTest extends FunSuite {
@@ -46,8 +43,7 @@ class WikipediaApiTest extends FunSuite {
         count += 1
       },
       t => assert(false, s"stream error $t"),
-      () => completed = true
-    )
+      () => completed = true)
     assert(completed && count == 3, "completed: " + completed + ", event count: " + count)
   }
 
@@ -66,5 +62,15 @@ class WikipediaApiTest extends FunSuite {
       s => total = s
     }
     assert(total == (1 + 1 + 2 + 1 + 2 + 3), s"Sum: $total")
+  }
+
+  test("Correctly compose the streams that have errors using concatRecovered") {
+    val requests = Observable.interval(0.25.second).timedOut(1)
+    val exception = new Exception("test")
+    val remoteComputation = (num: Long) => if (num != 2) Observable(num) else Observable(exception)
+    val responses = requests.concatRecovered(remoteComputation)
+    val actual = responses.toBlockingObservable.toList
+    val expected = List(Success(0), Success(1), Failure(exception), Success(3))
+    assert(actual === expected, s"actual : $actual is not as expected : $expected")
   }
 }
