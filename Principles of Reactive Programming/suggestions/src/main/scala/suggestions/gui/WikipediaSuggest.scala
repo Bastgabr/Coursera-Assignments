@@ -80,39 +80,32 @@ object WikipediaSuggest extends SimpleSwingApplication with ConcreteSwingApi wit
      *  `myEditorPane.text = "act"` : sets the content of `myEditorPane` to "act"
      */
 
-    // TO IMPLEMENT
-    val searchTerms: Observable[String] = ???
+    val searchTerms: Observable[String] = searchTermField.textValues.sanitized
 
-    // TO IMPLEMENT
-    val suggestions: Observable[Try[List[String]]] = ???
+    val suggestions: Observable[Try[List[String]]] = searchTerms.flatMap(term => wikiSuggestResponseStream(term)).recovered
 
-
-    // TO IMPLEMENT
-    val suggestionSubscription: Subscription =  suggestions.observeOn(eventScheduler) subscribe {
-      x => ???
+    val suggestionReaction = PartialFunction[Try[List[String]], Unit] {
+      case Success(v) => suggestionList.listData = v
+      case Failure(e) => status.text = e.getMessage
     }
+    val suggestionSubscription: Subscription = suggestions.observeOn(eventScheduler) subscribe (suggestionReaction)
 
-    // TO IMPLEMENT
-    val selections: Observable[String] = ???
+    val selections: Observable[String] = button.clicks.map(button => suggestionList.selection.items.head)
 
-    // TO IMPLEMENT
-    val pages: Observable[Try[String]] = ???
+    val pages: Observable[Try[String]] = selections.flatMap(term => wikiPageResponseStream(term)).recovered
 
-    // TO IMPLEMENT
-    val pageSubscription: Subscription = pages.observeOn(eventScheduler) subscribe {
-      x => ???
+    val pageReaction = PartialFunction[Try[String], Unit] {
+      case Success(v) => editorpane.text = v
+      case Failure(e) => status.text = e.getMessage
     }
-
+    val pageSubscription: Subscription = pages.observeOn(eventScheduler) subscribe (pageReaction)
   }
-
 }
-
 
 trait ConcreteWikipediaApi extends WikipediaApi {
   def wikipediaSuggestion(term: String) = Search.wikipediaSuggestion(term)
   def wikipediaPage(term: String) = Search.wikipediaPage(term)
 }
-
 
 trait ConcreteSwingApi extends SwingApi {
   type ValueChanged = scala.swing.event.ValueChanged
