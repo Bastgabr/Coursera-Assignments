@@ -179,16 +179,18 @@ class BinaryTreeNode(val elem: Int, initiallyRemoved: Boolean) extends Actor {
       }
     }
     case CopyTo(newRoot) => {
-      val children = subtrees.values.toSet
-      if (!removed) {
-        context.become(copying(children, false))
-        newRoot ! Insert(self, elem, elem)
-      } else if (children.isEmpty) {
-        context.parent ! CopyFinished
+      if (removed && subtrees.isEmpty) {
+        sender ! CopyFinished
       } else {
-        context.become(copying(children, true))
+        if (!removed) {
+          newRoot ! Insert(self, elem, elem)
+        }
+        val children = subtrees.values.toSet
+        children.foreach {
+          _ ! CopyTo(newRoot)
+        }
+        context.become(copying(sender, children, insertConfirmed = removed))
       }
-      children.foreach { _ ! CopyTo(newRoot) }
     }
   }
 
@@ -197,20 +199,22 @@ class BinaryTreeNode(val elem: Int, initiallyRemoved: Boolean) extends Actor {
    * `expected` is the set of ActorRefs whose replies we are waiting for,
    * `insertConfirmed` tracks whether the copy of this node to the new tree has been confirmed.
    */
-  def copying(expected: Set[ActorRef], insertConfirmed: Boolean): Receive = {
-    case OperationFinished(elem) =>
-      checkFinished(expected, insertConfirmed)
-    case CopyFinished =>
-      checkFinished(expected - sender, insertConfirmed)
-    case _ =>
-  }
-
-  private def checkFinished(expected: Set[ActorRef], insertConfirmed: Boolean): Unit = {
-    if (expected.isEmpty && insertConfirmed) {
-      subtrees.values.foreach { _ ! PoisonPill }
-      context.parent ! CopyFinished
-    } else
-      context.become(copying(expected, insertConfirmed))
+  def copying(requester: ActorRef, expected: Set[ActorRef], insertConfirmed: Boolean): Receive = {
+    case CopyFinished => {
+      val newExpected = expected - sender
+      if (newExpected.isEmpty && insertConfirmed) {
+        requester ! CopyFinished
+      } else {
+        context.become(copying(requester, newExpected, insertConfirmed))
+      }
+    }
+    case OperationFinished(id) => {
+      if (expected.isEmpty) {
+        requester ! CopyFinished
+      } else {
+        context.become(copying(requester, expected, insertConfirmed = true))
+      }
+    }
   }
 
   private def nextPos(e: Int) = if (e < elem) Left else Right
