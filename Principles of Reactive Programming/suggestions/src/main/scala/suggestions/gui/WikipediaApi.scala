@@ -58,11 +58,19 @@ trait WikipediaApi {
     def recovered: Observable[Try[T]] = {
       obs.materialize.filter(notification => notification.asJava.getKind() != rx.Notification.Kind.OnCompleted).map { x =>
         x match {
-          case OnError(e) => Failure(e)
-          case OnNext(v) => Success(v)
+          case OnError(e) => {
+            Failure(e)
+          }
+          case OnNext(v) => {
+            Success(v)
+          }
         }
       }
     }
+
+//    def recovered: Observable[Try[T]] = {
+//      obs.map(v => Success(v)).onErrorReturn(e => Failure(e))
+//    }
 
     /**
      * Emits the events from the `obs` observable, until `totalSec` seconds have elapsed.
@@ -100,10 +108,10 @@ trait WikipediaApi {
      *
      * should return:
      *
-     * Observable(Success(1), Succeess(1), Succeess(1), Succeess(2), Succeess(2), Succeess(2), Succeess(3), Succeess(3), Succeess(3))
+     * Observable(Success(1), Success(1), Success(1), Success(2), Success(2), Success(2), Success(3), Success(3), Success(3))
      */
     def concatRecovered[S](requestMethod: T => Observable[S]): Observable[Try[S]] = {
-      obs.flatMap(t => requestMethod(t)).recovered
+      obs.flatMap(t => requestMethod(t).recovered)
     }
   }
 }

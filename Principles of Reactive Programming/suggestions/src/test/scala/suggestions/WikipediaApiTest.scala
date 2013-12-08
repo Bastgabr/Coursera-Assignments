@@ -8,6 +8,7 @@ import scala.util.{ Try, Success, Failure }
 import rx.lang.scala._
 import org.scalatest._
 import gui._
+import rx.lang.scala.concurrency._
 
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
