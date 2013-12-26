@@ -14,6 +14,7 @@ import kvstore.Arbiter.Join
 import kvstore.Arbiter.JoinedPrimary
 import kvstore.Arbiter.JoinedSecondary
 import kvstore.Arbiter.Replicas
+import scala.language.postfixOps
 
 object Replica {
   sealed trait Operation {
