@@ -2,14 +2,9 @@ package kvstore
 
 import akka.actor._
 import kvstore.Arbiter._
-import scala.collection.immutable.Queue
-import akka.actor.SupervisorStrategy.Restart
-import scala.annotation.tailrec
-import akka.pattern.{ ask, pipe }
 import scala.concurrent.duration._
 import akka.util.Timeout
 import scala.language.postfixOps
-import scala.Some
 import kvstore.Arbiter.Replicas
 import akka.event.LoggingReceive
 
